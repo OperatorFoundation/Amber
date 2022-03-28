@@ -16,39 +16,35 @@ public class Amber
     {
         Amber.ensureFoundationLoaded()
 
-        AmberBase.strategies[strategy.name] = strategy
+        AmberBase.strategies[strategy.types] = strategy
     }
 
-    static public func save(_ object: Any) throws -> (String, Data)
+    static public func save(_ object: Any) throws -> Data
     {
         let name = "\(type(of: object))"
-        let result = try Amber.save(name, object)
+        let types = Types(name)
+        let result = try Amber.save(types, object)
 
-        return (name, result)
+        return result
     }
 
-    static public func save(_ name: String, _ object: Any) throws -> Data
+    static public func save(_ types: Types, _ object: Any) throws -> Data
     {
         Amber.ensureFoundationLoaded()
 
-        guard let strategy = AmberBase.strategies[name] else
+        guard let strategy = AmberBase.strategies[types] else
         {
-            throw AmberError.unknownStrategy(name)
+            throw AmberError.unknownStrategy(types)
         }
 
         return try strategy.save(object)
     }
 
-    static public func load(_ name: String, _ data: Data) throws -> Any
+    static public func load(_ data: Data) throws -> Any
     {
         Amber.ensureFoundationLoaded()
 
-        guard let strategy = AmberBase.strategies[name] else
-        {
-            throw AmberError.unknownStrategy(name)
-        }
-
-        return try strategy.load(data)
+        return try AmberBase.load(data)
     }
 
     static func ensureFoundationLoaded()

@@ -7,16 +7,16 @@ import Foundation
 
 public class TYPEPersistenceStrategy: PersistenceStrategy
 {
-    public var name: String
+    public var types: Types
     {
-        return "TYPE"
+        return Types("TYPE")
     }
 
     public func save(_ object: Any) throws -> Data
     {
         guard let typedObject = object as? TYPE else
         {
-            throw AmberError.wrongType(self.name, "\(type(of: object))")
+            throw AmberError.wrongTypes(self.types, AmberBase.types(of: object))
         }
 
         let encoder = JSONEncoder()

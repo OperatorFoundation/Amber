@@ -9,7 +9,7 @@ import Foundation
 
 public protocol PersistenceStrategy
 {
-    var name: String {get}
+    var types: Types {get}
     func save(_ object: Any) throws -> Data
     func load(_ data: Data) throws -> Any
 }
