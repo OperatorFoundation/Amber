@@ -32,4 +32,19 @@ final class AmberTests: XCTestCase
 
         XCTAssertEqual(typedResult, array)
     }
+
+    func testSaveLoadDictionaryStringInt() throws
+    {
+        let dictionary: [String: Int] = ["1": 1, "2": 2]
+
+        let data = try Amber.save(dictionary)
+        let result = try Amber.load(data)
+        guard let typedResult = result as? [String: Int] else
+        {
+            XCTFail()
+            return
+        }
+
+        XCTAssertEqual(typedResult, dictionary)
+    }
 }

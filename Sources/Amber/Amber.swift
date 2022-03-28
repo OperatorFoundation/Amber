@@ -21,23 +21,9 @@ public class Amber
 
     static public func save(_ object: Any) throws -> Data
     {
-        let name = "\(type(of: object))"
-        let types = Types(name)
-        let result = try Amber.save(types, object)
-
-        return result
-    }
-
-    static public func save(_ types: Types, _ object: Any) throws -> Data
-    {
         Amber.ensureFoundationLoaded()
 
-        guard let strategy = AmberBase.strategies[types] else
-        {
-            throw AmberError.unknownStrategy(types)
-        }
-
-        return try strategy.save(object)
+        return try AmberBase.save(object)
     }
 
     static public func load(_ data: Data) throws -> Any

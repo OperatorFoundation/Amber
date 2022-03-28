@@ -35,7 +35,7 @@ public class AmberBase
                 let splitIndex = parameters.firstIndex(of: ",")!
 
                 let first = String(parameters[parameters.startIndex..<splitIndex])
-                let second = String(parameters[parameters.index(after: splitIndex)..<parameters.endIndex])
+                let second = String(parameters[parameters.index(after: parameters.index(after: splitIndex))..<parameters.endIndex])
 
                 return Types([base, first, second])
             }
@@ -57,6 +57,12 @@ public class AmberBase
         return try AmberBase.save(types, persistable)
     }
 
+    static public func save(_ object: Any) throws -> Data
+    {
+        let types = AmberBase.types(of: object)
+        return try AmberBase.save(types, object)
+    }
+
     static public func save(_ types: Types, _ object: Any) throws -> Data
     {
         guard let strategy = AmberBase.strategies[types] else
@@ -76,7 +82,7 @@ public class AmberBase
         result.append(typeData)
         result.append(data)
 
-        return data
+        return result
     }
 
     static public func load(_ data: Data) throws -> Any
@@ -97,8 +103,8 @@ public class AmberBase
             throw AmberError.notAmberFormat
         }
 
-        let typeData = Data(data[0..<count])
-        rest = Data(data[count...])
+        let typeData = Data(rest[0..<count])
+        rest = Data(rest[count...])
 
         let decoder = JSONDecoder()
         let types = try decoder.decode(Types.self, from: typeData)
