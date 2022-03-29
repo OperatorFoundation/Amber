@@ -21,6 +21,7 @@ let package = Package(
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/OperatorFoundation/Datable", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Gardener", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/swift-ast", branch: "main"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -31,7 +32,10 @@ let package = Package(
         ),
         .target(
             name: "AmberBase",
-            dependencies: ["Datable"]
+            dependencies: [
+                "Datable",
+                .product(name: "SwiftAST", package: "swift-ast"),
+            ]
         ),
         .target(
             name: "AmberFoundation",
@@ -39,11 +43,14 @@ let package = Package(
         ),
         .executableTarget(
             name: "AmberFoundationGenerator",
-            dependencies: ["Gardener"],
+            dependencies: [
+                "AmberBase",
+                "Gardener",
+            ],
             resources: [
                 .copy("TwoGapTemplate.swift"),
                 .copy("OneGapTemplate.swift"),
-                .copy("SimpleTemplate.swift")
+                .copy("AmberTemplate.swift")
             ]
         ),
         .testTarget(

@@ -47,4 +47,43 @@ final class AmberTests: XCTestCase
 
         XCTAssertEqual(typedResult, dictionary)
     }
+
+    func testTypeParser1() throws
+    {
+        let object = "test"
+        let type = type(of: object)
+        guard let types = Types("\(type)") else
+        {
+            XCTFail()
+            return
+        }
+        let description = types.description
+        XCTAssertEqual(description, "String")
+    }
+
+    func testTypeParser2() throws
+    {
+        let object = ["test"]
+        let type = type(of: object)
+        guard let types = Types("\(type)") else
+        {
+            XCTFail()
+            return
+        }
+        let description = types.description
+        XCTAssertEqual(description, "Array<String>")
+    }
+
+    func testTypeParser3() throws
+    {
+        let object = ["test": 1]
+        let type = type(of: object)
+        guard let types = Types("\(type)") else
+        {
+            XCTFail()
+            return
+        }
+        let description = types.description
+        XCTAssertEqual(description, "Dictionary<String, Int>")
+    }
 }

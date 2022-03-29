@@ -5,6 +5,7 @@
 //  Created by Dr. Brandon Wiley on 3/27/22.
 //
 
+import AmberBase
 import Foundation
 import Gardener
 
@@ -294,114 +295,33 @@ public class Generator
 
         var registrations = ""
 
-        for type in simpleTypes
+        for typeName in simpleTypes
         {
-            let filepath = "\(outputPath)/\(type)PersistenceStrategy.swift"
-            print("Generating \(filepath)...")
-
-            guard let contentURL = Bundle.module.url(forResource: "SimpleTemplate", withExtension: "swift") else
+            let types = Types.type(typeName)
+            guard let registration = Generator.writeType(outputPath, types) else
             {
-                print("Could not find template")
-                return
+                continue
             }
-
-            do
-            {
-                let content = try String(contentsOf: contentURL)
-                let typeContent = content.description.replacingOccurrences(of: "TYPE", with: type)
-                do
-                {
-                    try typeContent.write(toFile: filepath, atomically: true, encoding: .utf8)
-                }
-                catch
-                {
-                    print("Could not write to output file \(filepath)")
-                    return
-                }
-            }
-            catch
-            {
-                print("Could not load template")
-                return
-            }
-
-            let registration = """
-                    AmberBase.register(\(type)PersistenceStrategy())\n
-            """
             registrations.append(registration)
         }
 
-        for innerType in simpleTypes
+        for innerTypeName in simpleTypes
         {
-            let filepath = "\(outputPath)/Array\(innerType)PersistenceStrategy.swift"
-            print("Generating \(filepath)...")
-
-            guard let contentURL = Bundle.module.url(forResource: "OneGapTemplate", withExtension: "swift") else
+            let types = Types.generic("Array", [.type(innerTypeName)])
+            guard let registration = Generator.writeType(outputPath, types) else
             {
-                print("Could not find template")
-                return
+                continue
             }
-
-            do
-            {
-                let content = try String(contentsOf: contentURL)
-                let typeContent = content.description.replacingOccurrences(of: "INNER", with: innerType).replacingOccurrences(of: "OUTER", with: "Array")
-                do
-                {
-                    try typeContent.write(toFile: filepath, atomically: true, encoding: .utf8)
-                }
-                catch
-                {
-                    print("Could not write to output file \(filepath)")
-                    return
-                }
-            }
-            catch
-            {
-                print("Could not load template")
-                return
-            }
-
-            let registration = """
-                    AmberBase.register(Array\(innerType)PersistenceStrategy())\n
-            """
             registrations.append(registration)
         }
 
-        for innerType in hashableTypes
+        for innerTypeName in hashableTypes
         {
-            let filepath = "\(outputPath)/Set\(innerType)PersistenceStrategy.swift"
-            print("Generating \(filepath)...")
-
-            guard let contentURL = Bundle.module.url(forResource: "OneGapTemplate", withExtension: "swift") else
+            let types = Types.generic("Set", [.type(innerTypeName)])
+            guard let registration = Generator.writeType(outputPath, types) else
             {
-                print("Could not find template")
-                return
+                continue
             }
-
-            do
-            {
-                let content = try String(contentsOf: contentURL)
-                let typeContent = content.description.replacingOccurrences(of: "INNER", with: innerType).replacingOccurrences(of: "OUTER", with: "Set")
-                do
-                {
-                    try typeContent.write(toFile: filepath, atomically: true, encoding: .utf8)
-                }
-                catch
-                {
-                    print("Could not write to output file \(filepath)")
-                    return
-                }
-            }
-            catch
-            {
-                print("Could not load template")
-                return
-            }
-
-            let registration = """
-                    AmberBase.register(Set\(innerType)PersistenceStrategy())\n
-            """
             registrations.append(registration)
         }
 
@@ -409,38 +329,11 @@ public class Generator
         {
             for third in simpleTypes
             {
-                let filepath = "\(outputPath)/Dictionary\(second)\(third)PersistenceStrategy.swift"
-                print("Generating \(filepath)...")
-
-                guard let contentURL = Bundle.module.url(forResource: "TwoGapTemplate", withExtension: "swift") else
+                let types = Types.generic("Dictionary", [.type(second), .type(third)])
+                guard let registration = Generator.writeType(outputPath, types) else
                 {
-                    print("Could not find template")
-                    return
+                    continue
                 }
-
-                do
-                {
-                    let content = try String(contentsOf: contentURL)
-                    let typeContent = content.description.replacingOccurrences(of: "FIRST", with: "Dictionary").replacingOccurrences(of: "SECOND", with: second).replacingOccurrences(of: "THIRD", with: third)
-                    do
-                    {
-                        try typeContent.write(toFile: filepath, atomically: true, encoding: .utf8)
-                    }
-                    catch
-                    {
-                        print("Could not write to output file \(filepath)")
-                        return
-                    }
-                }
-                catch
-                {
-                    print("Could not load template")
-                    return
-                }
-
-                let registration = """
-                        AmberBase.register(Dictionary\(second)\(third)PersistenceStrategy())\n
-                """
                 registrations.append(registration)
             }
         }
@@ -472,5 +365,42 @@ public class Generator
 
 
         print("Done!")
+    }
+
+    static func writeType(_ outputPath: String, _ types: Types) -> String?
+    {
+        let filepath = "\(outputPath)/\(types.typename)_PersistenceStrategy.swift"
+        print("Generating \(filepath)...")
+
+        guard let contentURL = Bundle.module.url(forResource: "AmberTemplate", withExtension: "swift") else
+        {
+            print("Could not find template")
+            return nil
+        }
+
+        do
+        {
+            let content = try String(contentsOf: contentURL)
+            let typeContent = content.description.replacingOccurrences(of: "CONSTRUCTOR", with: types.constructorString).replacingOccurrences(of: "DESCRIPTION", with: types.description).replacingOccurrences(of: "NAME", with: types.typename)
+            do
+            {
+                try typeContent.write(toFile: filepath, atomically: true, encoding: .utf8)
+            }
+            catch
+            {
+                print("Could not write to output file \(filepath)")
+                return nil
+            }
+        }
+        catch
+        {
+            print("Could not load template")
+            return nil
+        }
+
+        let registration = """
+                    AmberBase.register(\(types.typename)_PersistenceStrategy())\n
+            """
+        return registration
     }
 }

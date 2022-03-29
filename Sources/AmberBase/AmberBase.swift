@@ -37,16 +37,16 @@ public class AmberBase
                 let first = String(parameters[parameters.startIndex..<splitIndex])
                 let second = String(parameters[parameters.index(after: parameters.index(after: splitIndex))..<parameters.endIndex])
 
-                return Types([base, first, second])
+                return Types.generic(base, [.type(first), .type(second)])
             }
             else // one gap
             {
-                return Types([base, parameters])
+                return Types.generic(base, [.type(parameters)])
             }
         }
         else // no gaps
         {
-            return Types(typeString)
+            return Types.type(typeString)
         }
     }
 
