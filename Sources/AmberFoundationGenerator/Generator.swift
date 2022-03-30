@@ -6,10 +6,11 @@
 //
 
 import AmberBase
+import AmberGenerator
 import Foundation
 import Gardener
 
-public class Generator
+public class FoundationGenerator
 {
     static public func generate()
     {
@@ -293,114 +294,26 @@ public class Generator
             "Morphology",
         ]
 
-        var registrations = ""
-
-        for typeName in simpleTypes
-        {
-            let types = Types.type(typeName)
-            guard let registration = Generator.writeType(outputPath, types) else
-            {
-                continue
-            }
-            registrations.append(registration)
-        }
+        var typeNames = [String](simpleTypes)
 
         for innerTypeName in simpleTypes
         {
-            let types = Types.generic("Array", [.type(innerTypeName)])
-            guard let registration = Generator.writeType(outputPath, types) else
-            {
-                continue
-            }
-            registrations.append(registration)
+            typeNames.append("Array<\(innerTypeName)>")
         }
 
         for innerTypeName in hashableTypes
         {
-            let types = Types.generic("Set", [.type(innerTypeName)])
-            guard let registration = Generator.writeType(outputPath, types) else
-            {
-                continue
-            }
-            registrations.append(registration)
+            typeNames.append("Set<\(innerTypeName)>")
         }
 
         for second in hashableTypes
         {
             for third in simpleTypes
             {
-                let types = Types.generic("Dictionary", [.type(second), .type(third)])
-                guard let registration = Generator.writeType(outputPath, types) else
-                {
-                    continue
-                }
-                registrations.append(registration)
+                typeNames.append("Dictionary<\(second), \(third)>")
             }
         }
 
-        let filepath = "\(outputPath)/AmberFoundation.swift"
-        print("Generating \(filepath)...")
-
-        let content = """
-        import AmberBase
-
-        public class AmberFoundation
-        {
-            static public func register()
-            {
-        \(registrations)
-            }
-        }
-        """
-
-        do
-        {
-            try content.write(toFile: filepath, atomically: true, encoding: .utf8)
-        }
-        catch
-        {
-            print("Could not write to output file \(filepath)")
-            return
-        }
-
-
-        print("Done!")
-    }
-
-    static func writeType(_ outputPath: String, _ types: Types) -> String?
-    {
-        let filepath = "\(outputPath)/\(types.typename)_PersistenceStrategy.swift"
-        print("Generating \(filepath)...")
-
-        guard let contentURL = Bundle.module.url(forResource: "AmberTemplate", withExtension: "swift") else
-        {
-            print("Could not find template")
-            return nil
-        }
-
-        do
-        {
-            let content = try String(contentsOf: contentURL)
-            let typeContent = content.description.replacingOccurrences(of: "CONSTRUCTOR", with: types.constructorString).replacingOccurrences(of: "DESCRIPTION", with: types.description).replacingOccurrences(of: "NAME", with: types.typename)
-            do
-            {
-                try typeContent.write(toFile: filepath, atomically: true, encoding: .utf8)
-            }
-            catch
-            {
-                print("Could not write to output file \(filepath)")
-                return nil
-            }
-        }
-        catch
-        {
-            print("Could not load template")
-            return nil
-        }
-
-        let registration = """
-                    AmberBase.register(\(types.typename)_PersistenceStrategy())\n
-            """
-        return registration
+        Generator.generate(typeNames: typeNames, registrationName: "AmberFoundation", outputPath: outputPath)
     }
 }

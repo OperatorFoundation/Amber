@@ -86,4 +86,80 @@ final class AmberTests: XCTestCase
         let description = types.description
         XCTAssertEqual(description, "Dictionary<String, Int>")
     }
+
+    func testUserDefinedType() throws
+    {
+        struct TestStruct: Codable, Equatable
+        {
+            var name: String = "test"
+        }
+
+        struct TestStructPersistenceStrategy: PersistenceStrategy
+        {
+            var types: Types = Types.type("TestStruct")
+
+            func save(_ object: Any) throws -> Data
+            {
+                guard let typedObject = object as? TestStruct else
+                {
+                    throw AmberError.wrongTypes(self.types, AmberBase.types(of: object))
+                }
+
+                let encoder = JSONEncoder()
+                return try encoder.encode(typedObject)
+            }
+
+            func load(_ data: Data) throws -> Any
+            {
+                let decoder = JSONDecoder()
+                return try decoder.decode(TestStruct.self, from: data)
+            }
+        }
+
+        Amber.register(TestStructPersistenceStrategy())
+
+        let object = TestStruct()
+        var data = try Amber.save(object)
+        var result = try Amber.load(data)
+        guard let typedResult = result as? TestStruct else
+        {
+            XCTFail()
+            return
+        }
+        XCTAssertEqual(typedResult, object)
+
+        struct Array_C_TestStruct_D_PersistenceStrategy: PersistenceStrategy
+        {
+            var types: Types = Types.generic("Array", [.type("TestStruct")])
+
+            func save(_ object: Any) throws -> Data
+            {
+                guard let typedObject = object as? Array<TestStruct> else
+                {
+                    throw AmberError.wrongTypes(self.types, AmberBase.types(of: object))
+                }
+
+                let encoder = JSONEncoder()
+                return try encoder.encode(typedObject)
+            }
+
+            func load(_ data: Data) throws -> Any
+            {
+                let decoder = JSONDecoder()
+                return try decoder.decode(Array<TestStruct>.self, from: data)
+            }
+        }
+
+        Amber.register(Array_C_TestStruct_D_PersistenceStrategy())
+
+        let array = [object]
+        data = try Amber.save(array)
+        result = try Amber.load(data)
+        guard let arrayResult = result as? Array<TestStruct> else
+        {
+            XCTFail()
+            return
+        }
+        XCTAssertEqual(arrayResult, array)
+    }
 }

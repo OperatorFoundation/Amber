@@ -8,4 +8,4 @@
 import Foundation
 import Gardener
 
-Generator.generate()
+FoundationGenerator.generate()

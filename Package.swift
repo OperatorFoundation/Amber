@@ -28,7 +28,12 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Amber",
-            dependencies: ["AmberBase", "AmberFoundation"]
+            dependencies: [
+                "AmberBase",
+                "AmberFoundation",
+                "AmberGenerator",
+                "Gardener",
+            ]
         ),
         .target(
             name: "AmberBase",
@@ -45,12 +50,22 @@ let package = Package(
             name: "AmberFoundationGenerator",
             dependencies: [
                 "AmberBase",
+                "AmberGenerator",
                 "Gardener",
             ],
             resources: [
-                .copy("TwoGapTemplate.swift"),
-                .copy("OneGapTemplate.swift"),
-                .copy("AmberTemplate.swift")
+                .copy("AmberTemplate.swift"),
+            ]
+        ),
+        .target(
+            name: "AmberGenerator",
+            dependencies: [
+                "AmberBase",
+                "Gardener",
+            ],
+            resources: [
+                .copy("TypeTemplate.swift"),
+                .copy("RegistrationTemplate.swift"),
             ]
         ),
         .testTarget(
