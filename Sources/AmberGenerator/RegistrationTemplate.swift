@@ -2,7 +2,7 @@
 //  NAMERegistration.swift
 //  
 
-import AmberBase
+import IMPORT
 
 public class NAMERegistration
 {

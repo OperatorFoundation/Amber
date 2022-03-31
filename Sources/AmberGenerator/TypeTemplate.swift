@@ -2,7 +2,7 @@
 //  TYPEPersistenceStrategy.swift
 //  
 
-import AmberBase
+import IMPORT
 import Foundation
 
 public class NAME_PersistenceStrategy: PersistenceStrategy
