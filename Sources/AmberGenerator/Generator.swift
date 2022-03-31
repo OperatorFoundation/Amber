@@ -83,7 +83,7 @@ public class Generator
         }
         catch
         {
-            print("Could not write to output file \(filepath)")
+            print("Could not write to output file \(filepath) \(error)")
             return
         }
     }
@@ -130,7 +130,7 @@ public class Generator
         }
         catch
         {
-            print("Could not write to output file \(filepath)")
+            print("Could not write to output file \(filepath) \(error)")
             return
         }
     }
