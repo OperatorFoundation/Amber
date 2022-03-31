@@ -314,6 +314,6 @@ public class FoundationGenerator
             }
         }
 
-        Generator.generate(typeNames: typeNames, registrationName: "AmberFoundation", outputPath: outputPath)
+        Generator.generate(typeNames: typeNames, registrationName: "AmberFoundation", outputPath: outputPath, useBase: true)
     }
 }

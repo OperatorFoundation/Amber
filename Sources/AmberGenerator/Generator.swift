@@ -11,7 +11,18 @@ import Gardener
 
 public class Generator
 {
-    static public func generate(typeNames: [String], registrationName: String, outputPath: String)
+    static public func generate(configPath: String) throws
+    {
+        let url = URL(fileURLWithPath: configPath)
+        let data = try Data(contentsOf: url)
+
+        let decoder = JSONDecoder()
+        let config = try decoder.decode(Config.self, from: data)
+
+        Generator.generate(typeNames: config.types, registrationName: config.registrationName, outputPath: config.outputPath)
+    }
+
+    static public func generate(typeNames: [String], registrationName: String, outputPath: String, useBase: Bool = false)
     {
         if !File.exists(outputPath)
         {
@@ -29,67 +40,57 @@ public class Generator
 
         for types in typesArray
         {
-            Generator.writeType(outputPath, types)
+            Generator.writeType(outputPath, types, useBase: useBase)
         }
 
-        Generator.writeRegistration(name: registrationName, typesArray: typesArray, outputPath: outputPath)
+        Generator.writeRegistration(name: registrationName, typesArray: typesArray, outputPath: outputPath, useBase: useBase)
 
         print("Done!")
     }
 
-    static func writeType(_ outputPath: String, _ types: Types)
+    static func writeType(_ outputPath: String, _ types: Types, useBase: Bool)
     {
         let filepath = "\(outputPath)/\(types.typename)_PersistenceStrategy.swift"
         print("Generating \(filepath)...")
 
-        let content = """
-        //
-        //  TYPEPersistenceStrategy.swift
-        //
-
-        import AmberBase
-        import Foundation
-
-        public class NAME_PersistenceStrategy: PersistenceStrategy
+        guard let contentURL = Bundle.module.url(forResource: "TypeTemplate", withExtension: "swift") else
         {
-            public var types: Types
-            {
-                return CONSTRUCTOR
-            }
-
-            public func save(_ object: Any) throws -> Data
-            {
-                guard let typedObject = object as? DESCRIPTION else
-                {
-                    throw AmberError.wrongTypes(self.types, AmberBase.types(of: object))
-                }
-
-                let encoder = JSONEncoder()
-                return try encoder.encode(typedObject)
-            }
-
-            public func load(_ data: Data) throws -> Any
-            {
-                let decoder = JSONDecoder()
-                return try decoder.decode(DESCRIPTION.self, from: data)
-            }
+            print("Could not find type template")
+            return
         }
-        """
-        
-        let typeContent = content.description.replacingOccurrences(of: "CONSTRUCTOR", with: types.constructorString).replacingOccurrences(of: "DESCRIPTION", with: types.description).replacingOccurrences(of: "NAME", with: types.typename)
+
         do
         {
-            try typeContent.write(toFile: filepath, atomically: true, encoding: .utf8)
+            let content = try String(contentsOf: contentURL)
+            var typeContent = content.description.replacingOccurrences(of: "CONSTRUCTOR", with: types.constructorString).replacingOccurrences(of: "DESCRIPTION", with: types.description).replacingOccurrences(of: "NAME", with: types.typename)
+            if useBase
+            {
+                typeContent = typeContent.replacingOccurrences(of: "IMPORT", with: "AmberBase")
+            }
+            else
+            {
+                typeContent = typeContent.replacingOccurrences(of: "IMPORT", with: "Amber")
+            }
+
+            do
+            {
+                try typeContent.write(toFile: filepath, atomically: true, encoding: .utf8)
+            }
+            catch
+            {
+                print("Could not write to output file \(filepath)")
+                return
+            }
         }
         catch
         {
-            print("Could not write to output file \(filepath) \(error)")
+            print("Could not load type template")
             return
         }
     }
 
 
-    static func writeRegistration(name: String, typesArray: [Types], outputPath: String)
+    static func writeRegistration(name: String, typesArray: [Types], outputPath: String, useBase: Bool)
     {
         let filepath = "\(outputPath)/\(name).swift"
         print("Generating \(filepath)...")
@@ -105,24 +106,32 @@ public class Generator
             registrations.append(registration)
         }
 
-
-        let content = """
-        //
-        //  NAMERegistration.swift
-        //
-
-        import AmberBase
-
-        public class NAMERegistration
+        guard let contentURL = Bundle.module.url(forResource: "RegistrationTemplate", withExtension: "swift") else
         {
-            static public func register()
-            {
-        REGISTRATIONS
-            }
+            print("Could not find registration template")
+            return
         }
-        """
 
-        let registrationContent = content.description.replacingOccurrences(of: "NAME", with: name).replacingOccurrences(of: "REGISTRATIONS", with: registrations)
+        var registrationContent: String
+        do
+        {
+            let content = try String(contentsOf: contentURL)
+            registrationContent = content.description.replacingOccurrences(of: "NAME", with: name).replacingOccurrences(of: "REGISTRATIONS", with: registrations)
+            if useBase
+            {
+                registrationContent = registrationContent.replacingOccurrences(of: "IMPORT", with: "AmberBase")
+            }
+            else
+            {
+                registrationContent = registrationContent.replacingOccurrences(of: "IMPORT", with: "Amber")
+            }
+
+        }
+        catch
+        {
+            print("Could not load registration template")
+            return
+        }
 
         do
         {
@@ -130,7 +139,7 @@ public class Generator
         }
         catch
         {
-            print("Could not write to output file \(filepath) \(error)")
+            print("Could not write to output file \(filepath)")
             return
         }
     }

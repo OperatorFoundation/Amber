@@ -15,12 +15,17 @@ let package = Package(
             name: "AmberFoundationGenerator",
             targets: ["AmberFoundationGenerator"]
         ),
+        .executable(
+            name: "AmberGenerator",
+            targets: ["AmberGeneratorCommandLine"]
+        ),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/OperatorFoundation/Datable", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Gardener", branch: "main"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.1.1"),
         .package(url: "https://github.com/OperatorFoundation/swift-ast", branch: "main"),
     ],
     targets: [
@@ -31,12 +36,7 @@ let package = Package(
             dependencies: [
                 "AmberBase",
                 "AmberFoundation",
-                "AmberGenerator",
                 "Gardener",
-            ],
-            resources: [
-                .copy("TypeTemplate.swift"),
-                .copy("RegistrationTemplate.swift"),
             ]
         ),
         .target(
@@ -67,6 +67,13 @@ let package = Package(
             resources: [
                 .copy("TypeTemplate.swift"),
                 .copy("RegistrationTemplate.swift"),
+            ]
+        ),
+        .executableTarget(
+            name: "AmberGeneratorCommandLine",
+            dependencies: [
+                "AmberGenerator",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ]
         ),
         .testTarget(

@@ -6,7 +6,6 @@
 //
 
 import AmberFoundation
-import AmberGenerator
 import Foundation
 
 public class Amber
@@ -32,11 +31,6 @@ public class Amber
         Amber.ensureFoundationLoaded()
 
         return try AmberBase.load(data)
-    }
-
-    static public func generate(typeNames: [String], registrationName: String, outputPath: String)
-    {
-        Generator.generate(typeNames: typeNames, registrationName: registrationName, outputPath: outputPath)
     }
 
     static func ensureFoundationLoaded()
