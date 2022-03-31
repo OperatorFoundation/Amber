@@ -33,6 +33,10 @@ let package = Package(
                 "AmberFoundation",
                 "AmberGenerator",
                 "Gardener",
+            ],
+            resources: [
+                .copy("TypeTemplate.swift"),
+                .copy("RegistrationTemplate.swift"),
             ]
         ),
         .target(
