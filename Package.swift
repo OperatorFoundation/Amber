@@ -56,9 +56,6 @@ let package = Package(
                 "AmberBase",
                 "AmberGenerator",
                 "Gardener",
-            ],
-            resources: [
-                .copy("AmberTemplate.swift"),
             ]
         ),
         .target(

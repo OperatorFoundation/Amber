@@ -42,29 +42,48 @@ public class Generator
         let filepath = "\(outputPath)/\(types.typename)_PersistenceStrategy.swift"
         print("Generating \(filepath)...")
 
-        guard let contentURL = Bundle.module.url(forResource: "TypeTemplate", withExtension: "swift") else
-        {
-            print("Could not find type template")
-            return
-        }
+        let content = """
+        //
+        //  TYPEPersistenceStrategy.swift
+        //
 
+        import AmberBase
+        import Foundation
+
+        public class NAME_PersistenceStrategy: PersistenceStrategy
+        {
+            public var types: Types
+            {
+                return CONSTRUCTOR
+            }
+
+            public func save(_ object: Any) throws -> Data
+            {
+                guard let typedObject = object as? DESCRIPTION else
+                {
+                    throw AmberError.wrongTypes(self.types, AmberBase.types(of: object))
+                }
+
+                let encoder = JSONEncoder()
+                return try encoder.encode(typedObject)
+            }
+
+            public func load(_ data: Data) throws -> Any
+            {
+                let decoder = JSONDecoder()
+                return try decoder.decode(DESCRIPTION.self, from: data)
+            }
+        }
+        """
+        
+        let typeContent = content.description.replacingOccurrences(of: "CONSTRUCTOR", with: types.constructorString).replacingOccurrences(of: "DESCRIPTION", with: types.description).replacingOccurrences(of: "NAME", with: types.typename)
         do
         {
-            let content = try String(contentsOf: contentURL)
-            let typeContent = content.description.replacingOccurrences(of: "CONSTRUCTOR", with: types.constructorString).replacingOccurrences(of: "DESCRIPTION", with: types.description).replacingOccurrences(of: "NAME", with: types.typename)
-            do
-            {
-                try typeContent.write(toFile: filepath, atomically: true, encoding: .utf8)
-            }
-            catch
-            {
-                print("Could not write to output file \(filepath)")
-                return
-            }
+            try typeContent.write(toFile: filepath, atomically: true, encoding: .utf8)
         }
         catch
         {
-            print("Could not load type template")
+            print("Could not write to output file \(filepath)")
             return
         }
     }
@@ -86,23 +105,24 @@ public class Generator
             registrations.append(registration)
         }
 
-        guard let contentURL = Bundle.module.url(forResource: "RegistrationTemplate", withExtension: "swift") else
-        {
-            print("Could not find registration template")
-            return
-        }
 
-        let registrationContent: String
-        do
+        let content = """
+        //
+        //  NAMERegistration.swift
+        //
+
+        import AmberBase
+
+        public class NAMERegistration
         {
-            let content = try String(contentsOf: contentURL)
-            registrationContent = content.description.replacingOccurrences(of: "NAME", with: name).replacingOccurrences(of: "REGISTRATIONS", with: registrations)
+            static public func register()
+            {
+        REGISTRATIONS
+            }
         }
-        catch
-        {
-            print("Could not load registration template")
-            return
-        }
+        """
+
+        let registrationContent = content.description.replacingOccurrences(of: "NAME", with: name).replacingOccurrences(of: "REGISTRATIONS", with: registrations)
 
         do
         {

@@ -1,6 +1,6 @@
 //
 //  AmberFoundationRegistration.swift
-//  
+//
 
 import AmberBase
 
