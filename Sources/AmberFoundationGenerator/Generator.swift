@@ -219,7 +219,7 @@ public class FoundationGenerator
             //"IntegerFormatStyle", // FIXME - needs generics support
             //"FloatingPointFormatStyle", // FIXME - needs generics support
             //"ListFormatStyle", // FIXME - needs generics support
-            "StringStyle",
+            //"StringStyle",
 
             // Data Parsing in Swift
             //"ParseableFormatStyle",
@@ -285,10 +285,10 @@ public class FoundationGenerator
             "Calendar",
             "TimeZone",
             "Locale",
-            "MeasurementFormatUnitUsage",
+            //"MeasurementFormatUnitUsage",
             "PersonNameComponents",
             "Locale",
-            "FormatStyleCapitalizationContext",
+            //"FormatStyleCapitalizationContext",
             "StringStyle",
             "InflectionRule",
             "Morphology",
