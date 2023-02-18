@@ -45,9 +45,9 @@ public class FoundationGenerator
 
             // Geometry
             "CGFloat",
-            "NSPoint",
-            "NSSize",
-            "NSRect",
+//            "NSPoint",
+//            "NSSize",
+//            "NSRect",
             "AffineTransform",
             //"NSEdgeInsets",
 
