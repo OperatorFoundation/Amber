@@ -45,9 +45,9 @@ public class FoundationGenerator
 
             // Geometry
             "CGFloat",
-            "NSPoint",
-            "NSSize",
-            "NSRect",
+//            "NSPoint",
+//            "NSSize",
+//            "NSRect",
             "AffineTransform",
             //"NSEdgeInsets",
 
@@ -182,7 +182,7 @@ public class FoundationGenerator
             //"UnitInformationStorage",
 
             // Formatting Meausrements
-            "MeasurementFormatUnitUsage",
+            // "MeasurementFormatUnitUsage",
 
             // Data Formatting
             // Numbers and Currency
@@ -215,11 +215,11 @@ public class FoundationGenerator
             //"Formatter",
 
             // Data Formatting in Swift
-            "FormatStyleCapitalizationContext",
+            // "FormatStyleCapitalizationContext",
             //"IntegerFormatStyle", // FIXME - needs generics support
             //"FloatingPointFormatStyle", // FIXME - needs generics support
             //"ListFormatStyle", // FIXME - needs generics support
-            "StringStyle",
+            //"StringStyle",
 
             // Data Parsing in Swift
             //"ParseableFormatStyle",
@@ -285,11 +285,11 @@ public class FoundationGenerator
             "Calendar",
             "TimeZone",
             "Locale",
-            "MeasurementFormatUnitUsage",
+            // "MeasurementFormatUnitUsage",
             "PersonNameComponents",
             "Locale",
-            "FormatStyleCapitalizationContext",
-            "StringStyle",
+            // "FormatStyleCapitalizationContext",
+            // "StringStyle",
             "InflectionRule",
             "Morphology",
         ]
