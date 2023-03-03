@@ -25,7 +25,7 @@ let package = Package(
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/OperatorFoundation/Datable", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Gardener", branch: "main"),
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.1.1"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.2.2"),
         .package(url: "https://github.com/OperatorFoundation/swift-ast", branch: "main"),
     ],
     targets: [
