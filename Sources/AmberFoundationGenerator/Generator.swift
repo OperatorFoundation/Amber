@@ -48,7 +48,7 @@ public class FoundationGenerator
 //            "NSPoint",
 //            "NSSize",
 //            "NSRect",
-            "AffineTransform",
+//            "AffineTransform",
             //"NSEdgeInsets",
 
             // Ranges
