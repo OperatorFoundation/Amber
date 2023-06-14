@@ -55,7 +55,9 @@ let package = Package(
             dependencies: [
                 "AmberBase",
                 "AmberGenerator",
+                "Datable",
                 "Gardener",
+                .product(name: "SwiftAST", package: "swift-ast")
             ]
         ),
         .target(

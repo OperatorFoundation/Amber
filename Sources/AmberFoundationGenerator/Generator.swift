@@ -270,7 +270,7 @@ public class FoundationGenerator
             "URLComponents",
             "UUID",
             "CGFloat",
-            "AffineTransform",
+            //"AffineTransform",
             "NSRange",
             "String",
             "AttributedString",
